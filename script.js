@@ -1,6 +1,25 @@
+import { setupCategoryFilter } from './categoryFilter.js';
+import { setupPriceFilter } from './priceFilter.js';
+
+// Product Data and DOM Elements
+const productCards = document.querySelectorAll('.product-card');
+
+// Example product data
+const productData = [
+    { name: "Product 1", price: 10, category: "electronics" },
+    { name: "Product 2", price: 20, category: "clothing" },
+    { name: "Product 3", price: 30, category: "books" },
+    { name: "Product 4", price: 40, category: "electronics" },
+];
+
+// Set up category and price filters
+setupCategoryFilter(productCards);
+setupPriceFilter(productCards, productData, document.getElementById('category'));
+
+// Cart Counter
 let cartCount = 0;
 
-// Select the cart counter element (we'll create this next)
+// Create and display the cart counter element
 const cartCounter = document.createElement('div');
 cartCounter.id = 'cart-counter';
 cartCounter.textContent = `Cart: ${cartCount}`;
@@ -15,22 +34,3 @@ addToCartButtons.forEach(button => {
         alert(`${button.dataset.product} added to cart!`);
     });
 });
-
-// Filter products by category
-const categorySelect = document.getElementById('category');
-const productCards = document.querySelectorAll('.product-card');
-
-categorySelect.addEventListener('change', () => {
-    const selectedCategory = categorySelect.value;
-
-    productCards.forEach(card => {
-        const productCategory = card.dataset.category;
-
-        if (selectedCategory === 'all' || productCategory === selectedCategory) {
-            card.style.display = 'block'; // Show matching products
-        } else {
-            card.style.display = 'none'; // Hide non-matching products
-        }
-    });
-});
-
