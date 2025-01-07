@@ -15,3 +15,22 @@ addToCartButtons.forEach(button => {
         alert(`${button.dataset.product} added to cart!`);
     });
 });
+
+// Filter products by category
+const categorySelect = document.getElementById('category');
+const productCards = document.querySelectorAll('.product-card');
+
+categorySelect.addEventListener('change', () => {
+    const selectedCategory = categorySelect.value;
+
+    productCards.forEach(card => {
+        const productCategory = card.dataset.category;
+
+        if (selectedCategory === 'all' || productCategory === selectedCategory) {
+            card.style.display = 'block'; // Show matching products
+        } else {
+            card.style.display = 'none'; // Hide non-matching products
+        }
+    });
+});
+
