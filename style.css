@@ -66,7 +66,7 @@ footer {
 }
 
 .product-card:hover {
-    transform: translateY(+50px);
+    transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
@@ -84,4 +84,17 @@ footer {
     font-size: 16px;
     color: #333;
     margin-bottom: 10px;
+}
+
+#cart-counter {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
