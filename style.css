@@ -50,7 +50,7 @@ footer {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    justify-content:center;
+    justify-content: center;
     padding: 20px 0;
 }
 
@@ -102,6 +102,7 @@ footer {
 .filters {
     margin-bottom: 20px;
     text-align: center;
+    flex-flow: row wrap;
 }
 
 .filters label {
@@ -109,9 +110,56 @@ footer {
     margin-right: 10px;
 }
 
+#category {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
 .filters select {
     padding: 5px 10px;
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.custom-price-inputs {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.custom-price-inputs input {
+    font-size: 16px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 120px;
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.custom-price-inputs input:hover,
+.custom-price-inputs input:focus {
+    border-color: #666;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+    .filters {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filters label, 
+    .filters select, 
+    .custom-price-inputs {
+        width: 100%;
+        max-width: 300px;
+    }
 }
