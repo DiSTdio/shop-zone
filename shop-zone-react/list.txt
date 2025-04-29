@@ -1,0 +1,351 @@
+shop-zone-react\src\App.js
+import React, { useState, useContext, useEffect, useRef } from "react";
+import ProductGrid from "./components/ProductGrid";
+import Cart from "./components/Cart";
+import Checkout from "./components/Checkout";
+import OrderHistory from "./components/OrderHistory";
+import Profile from "./components/Profile";
+import { CartProvider, CartContext } from "./context/CartContext";
+import "./styles/styles.css"; // Corrected path
+
+function App() {
+    console.log("App component rendered");
+    const [view, setView] = useState("products");
+    const { cart } = useContext(CartContext);
+    const [darkMode, setDarkMode] = useState(false); // Added darkMode state
+    const cartCounterRef = useRef(null);
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("darkMode");
+        if (savedTheme === "true") {
+            document.body.classList.add("dark-mode");
+            setDarkMode(true);
+        }
+    },);
+
+    useEffect(() => {
+        const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        if (cartCounterRef.current) {
+            cartCounterRef.current.textContent = cartCount;
+        }
+        console.log("Cart count updated:", cartCount);
+    }, [cart]);
+
+    const toggleDarkMode = () => { // Added toggleDarkMode function
+        const newMode = !darkMode;
+        setDarkMode(newMode);
+        document.body.classList.toggle("dark-mode", newMode);
+        localStorage.setItem("darkMode", newMode);
+    };
+    return (
+        <CartProvider>
+            <div className="App">
+                <header>
+                    <h1>ShopZone</h1>
+                    <nav>
+                        <button onClick={() => setView("products")}>Products</button>
+                        <button onClick={() => setView("cart")}>
+                            Cart <span className="cart-counter" ref={cartCounterRef}>0</span>
+                        </button>
+                        <button onClick={() => setView("cart")}>
+                            MY BU$CKET <span className="busket-counter">{cart.reduce((total, item) => total + item.quantity, 0)}</span>
+                        </button>
+                        <button onClick={() => setView("orders")}>Orders</button>
+                        <button onClick={() => setView("profile")}>Profile</button>
+                        <button onClick={toggleDarkMode}>
+                            {darkMode ? "☀️ Light Mode" : " Dark Mode"}
+                        </button>
+                    </nav>
+                </header>
+                <main>
+                    {view === "products" && <ProductGrid />}
+                    {view === "cart" && <Cart onGoToCheckout={() => setView("checkout")} />}
+                    {view === "checkout" && <Checkout onGoBack={() => setView("cart")} onGoToOrders={() => setView("orders")} />}
+                    {view === "orders" && <OrderHistory onGoBack={() => setView("products")} />}
+                    {view === "profile" && <Profile onGoBack={() => setView("products")} />}
+                </main>
+            </div>
+        </CartProvider>
+    );
+}
+
+export default App;
+
+shop-zone-react\src\context\CartContext.js
+import React, { createContext, useReducer, useEffect } from "react";
+
+export const CartContext = createContext();
+
+const initialState = {
+    cart: [],
+    bucket: []
+};
+
+// ✅ Define separate reducers for cart and bucket
+const cartReducer = (state, action) => {
+    switch (action.type) {
+        case "ADD_TO_CART":
+            return {
+                ...state,
+                cart: state.cart.some((item) => item.id === action.payload.id)
+                    ? state.cart.map((item) =>
+                          item.id === action.payload.id ? { ...item, quantity: item.quantity + 1 } : item
+                      )
+                    : [...state.cart, { ...action.payload, quantity: 1 }]
+            };
+
+        case "REMOVE_FROM_CART":
+            return {
+                ...state,
+                cart: state.cart
+                    .map((item) =>
+                        item.id === action.payload ? { ...item, quantity: item.quantity - 1 } : item
+                    )
+                    .filter((item) => item.quantity > 0)
+            };
+
+        case "DELETE_FROM_CART":
+            return {
+                ...state,
+                cart: state.cart.filter((item) => item.id !== action.payload)
+            };
+
+        // ✅ New logic for BU$CKET
+        case "ADD_TO_BUCKET":
+            return {
+                ...state,
+                bucket: state.bucket.some((item) => item.id === action.payload.id)
+                    ? state.bucket.map((item) =>
+                          item.id === action.payload.id ? { ...item, quantity: item.quantity + 1 } : item
+                      )
+                    : [...state.bucket, { ...action.payload, quantity: 1 }]
+            };
+
+        case "REMOVE_FROM_BUCKET":
+            return {
+                ...state,
+                bucket: state.bucket
+                    .map((item) =>
+                        item.id === action.payload ? { ...item, quantity: item.quantity - 1 } : item
+                    )
+                    .filter((item) => item.quantity > 0)
+            };
+
+        case "DELETE_FROM_BUCKET":
+            return {
+                ...state,
+                bucket: state.bucket.filter((item) => item.id !== action.payload)
+            };
+
+        default:
+            return state;
+    }
+};
+
+export const CartProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(cartReducer, initialState, () => {
+        const savedData = localStorage.getItem("cartState");
+        return savedData ? JSON.parse(savedData) : initialState;
+    });
+
+    useEffect(() => {
+        localStorage.setItem("cartState", JSON.stringify(state));
+        updateCounters(state.cart, state.bucket);
+    }, [state]);
+
+    const updateCounters = (cart, bucket) => {
+        document.querySelector(".cart-counter").textContent = cart.reduce((total, item) => total + item.quantity, 0);
+        document.querySelector(".bucket-counter").textContent = bucket.reduce((total, item) => total + item.quantity, 0);
+    };
+
+    return (
+        <CartContext.Provider value={{ 
+            cart: state.cart, 
+            bucket: state.bucket,
+            addToCart: (item) => dispatch({ type: "ADD_TO_CART", payload: item }),
+            removeFromCart: (id) => dispatch({ type: "REMOVE_FROM_CART", payload: id }),
+            deleteFromCart: (id) => dispatch({ type: "DELETE_FROM_CART", payload: id }),
+            addToBucket: (item) => dispatch({ type: "ADD_TO_BUCKET", payload: item }),
+            removeFromBucket: (id) => dispatch({ type: "REMOVE_FROM_BUCKET", payload: id }),
+            deleteFromBucket: (id) => dispatch({ type: "DELETE_FROM_BUCKET", payload: id })
+        }}>
+            {children}
+        </CartContext.Provider>
+    );
+};
+
+
+
+//this is saved only because i liked those fucntions more, they works better
+// import React, { createContext, useState, useEffect } from "react";
+
+// export const CartContext = createContext();
+
+// export const CartProvider = ({ children }) => {
+//     const [cart, setCart] = useState(() => {
+//         const savedCart = localStorage.getItem("cart");
+//         if (savedCart) {
+//             try {
+//                 return JSON.parse(savedCart);
+//             } catch (error) {
+//                 console.error("Error parsing cart:", error);
+//                 return [];
+//             }
+//         }
+//         return [];
+//     });
+
+//     useEffect(() => {
+//         localStorage.setItem("cart", JSON.stringify(cart));
+//         console.log("Cart in context updated:", cart);
+//         console.log("CartContext setCart called", cart);
+//     }, [cart]);
+
+//     const addToCart = (product) => {
+//         setCart((prevCart) => {
+//             const existingProduct = prevCart.find((item) => item.id === product.id);
+//             return existingProduct
+//                 ? prevCart.map((item) =>
+//                       item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+//                   )
+//                 : [...prevCart, { ...product, quantity: 1 }]; // Создаем новый массив
+//         });
+//         console.log("Product added", product.id);
+//     };
+
+//     const removeFromCart = (productId) => {
+//         setCart((prevCart) => {
+//             const itemToUpdate = prevCart.find((item) => item.id === productId);
+//             if (itemToUpdate && itemToUpdate.quantity > 1) {
+//                 return prevCart.map((item) =>
+//                     item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+//                 );
+//             } else {
+//                 return prevCart.filter((item) => item.id !== productId); // Создаем новый массив
+//             }
+//         });
+//         console.log("CartContext setCart called after removing minus 1", localStorage.getItem('cart'));
+//     };
+
+//     const deleteProductFromCart = (productId) => {
+//         setCart((prevCart) => prevCart.filter((item) => item.id !== productId)); // Создаем новый массив
+//         console.log("CartContext setCart called after deleting", localStorage.getItem('cart'));
+//     };
+
+//     return (
+//         <CartContext.Provider value={{ cart, addToCart, removeFromCart, deleteProductFromCart, setCart }}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };
+// import React, { createContext, useReducer, useEffect } from "react";
+
+// export const CartContext = createContext();
+
+// const cartReducer = (state, action) => {
+//     switch (action.type) {
+//         case "ADD_TO_CART":
+//             const existingProduct = state.find((item) => item.id === action.payload.id);
+//             return existingProduct
+//                 ? state.map((item) =>
+//                       item.id === action.payload.id ? { ...item, quantity: item.quantity + 1 } : item
+//                   )
+//                 : [...state, { ...action.payload, quantity: 1 }];
+//         case "REMOVE_FROM_CART":
+//             const itemToUpdate = state.find((item) => item.id === action.payload);
+//             if (itemToUpdate && itemToUpdate.quantity > 1) {
+//                 return state.map((item) =>
+//                     item.id === action.payload ? { ...item, quantity: item.quantity - 1 } : item
+//                 );
+//             } else {
+//                 return state.filter((item) => item.id !== action.payload);
+//             }
+//         case "DELETE_PRODUCT_FROM_CART":
+//             return state.filter((item) => item.id !== action.payload);
+//         default:
+//             return state;
+//     }
+// };
+
+// export const CartProvider = ({ children }) => {
+//     const [cart, dispatch] = useReducer(cartReducer, [], () => {
+//         const savedCart = localStorage.getItem("cart");
+//         if (savedCart) {
+//             try {
+//                 return JSON.parse(savedCart);
+//             } catch (error) {
+//                 console.error("Error parsing cart:", error);
+//                 return [];
+//             }
+//         }
+//         return [];
+//     });
+
+//     useEffect(() => {
+//         localStorage.setItem("cart", JSON.stringify(cart));
+//         console.log("Cart in context updated:", cart);
+//     }, [cart]);
+
+//     const addToCart = (product) => {
+//         dispatch({ type: "ADD_TO_CART", payload: product });
+//         console.log("Product added", product.id);
+//     };
+
+//     const removeFromCart = (productId) => {
+//         dispatch({ type: "REMOVE_FROM_CART", payload: productId });
+//         console.log("CartContext setCart called after removing minus 1", localStorage.getItem('cart'));
+//     };
+
+//     const deleteProductFromCart = (productId) => {
+//         dispatch({ type: "DELETE_PRODUCT_FROM_CART", payload: productId });
+//         console.log("CartContext setCart called after deleting", localStorage.getItem('cart'));
+//     };
+
+//     return (
+//         <CartContext.Provider value={{ cart, addToCart, removeFromCart, deleteProductFromCart }}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };
+
+shop-zone-react\src\components\ProductCard.js
+import React, { useContext } from "react";
+import { CartContext } from "../context/CartContext";
+
+function ProductCard({ id, name, price, category, image }) {
+    const { addToCart } = useContext(CartContext); // ✅ Get addToCart
+
+    return (
+        <div className="product-card">
+            <img src={image} alt={name} />
+            <h3>{name}</h3>
+            <p>${price.toFixed(2)}</p>
+            <button onClick={() => addToCart({ id, name, price, category, image })}>
+                Add to Cart
+            </button>
+        </div>
+    );
+}
+
+export default ProductCard;
+
+shop-zone-react\src\components\Cart.js
+import React, { useContext } from "react";
+import { CartContext } from "../context/CartContext";
+
+function ProductCard({ id, name, price, category, image }) {
+    const { addToCart } = useContext(CartContext); // ✅ Get addToCart
+
+    return (
+        <div className="product-card">
+            <img src={image} alt={name} />
+            <h3>{name}</h3>
+            <p>${price.toFixed(2)}</p>
+            <button onClick={() => addToCart({ id, name, price, category, image })}>
+                Add to Cart
+            </button>
+        </div>
+    );
+}
+
+export default ProductCard;
