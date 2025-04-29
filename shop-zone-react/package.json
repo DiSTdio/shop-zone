@@ -2,15 +2,13 @@
   "name": "shop-zone-react",
   "version": "1.0.0",
   "main": "index.js",
-  "homepage": "https://DiSTdio.github.io/shop-zone/shop-zone-react",
+  "homepage": "https://distdio.github.io/shop-zone/shop-zone-react",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build -b gh-pages",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+  "start": "react-scripts start",
+  "build": "react-scripts build",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build -b gh-pages -f"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
