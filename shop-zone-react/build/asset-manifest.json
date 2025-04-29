@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/shop-zone/shop-zone-react/static/css/main.a3148378.css",
+    "main.js": "/shop-zone/shop-zone-react/static/js/main.10c1f928.js",
+    "index.html": "/shop-zone/shop-zone-react/index.html",
+    "main.a3148378.css.map": "/shop-zone/shop-zone-react/static/css/main.a3148378.css.map",
+    "main.10c1f928.js.map": "/shop-zone/shop-zone-react/static/js/main.10c1f928.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a3148378.css",
+    "static/js/main.10c1f928.js"
+  ]
+}
