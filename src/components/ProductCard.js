@@ -13,12 +13,18 @@ function ProductCard({ id, name, price, category, image }) {
 
     return (
         <div className={`product-card ${isFlashing ? "flash" : ""}`} data-category={category}>
-            <img src={image} alt={name} />
+            <img src={image || fallback} alt={name || "Product Image"} />
+
             <h3>{name}</h3>
-            <p className="product-price">${price.toFixed(2)}</p>
-            <button onClick={handleAddToCart}>Add to Cart</button>
+
+            <p className="product-price">💲{price.toFixed(2)}</p>
+
+            <button onClick={() => addToCart({ id, name, price, image })}>
+                🛒 Add to Cart
+            </button>
         </div>
     );
+
 }
 
 export default ProductCard;

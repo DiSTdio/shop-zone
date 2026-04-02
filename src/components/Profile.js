@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Profile({ onGoBack }) {
     const [name, setName] = useState("");
@@ -6,6 +7,7 @@ function Profile({ onGoBack }) {
     const [address, setAddress] = useState("");
     const [errors, setErrors] = useState({ name: "", email: "", address: "" }); // Ошибки для каждого поля
 
+    const navigate = useNavigate();
     useEffect(() => {
         const savedProfile = localStorage.getItem("profile");
         if (savedProfile) {
@@ -19,7 +21,7 @@ function Profile({ onGoBack }) {
     const validateForm = () => {
         let isValid = true;
         const newErrors = { name: "", email: "", address: "" };
- 
+
         if (!name || name.length < 2) {
             newErrors.name = "Name must be at least 2 characters long.";
             isValid = false;
@@ -53,7 +55,7 @@ function Profile({ onGoBack }) {
     return (
         <div className="profile-container">
             <h2>👤 Your Profile</h2>
-            <div class = ""></div>
+            <div class=""></div>
             <div className="form-group">
                 <input
                     type="text"
@@ -82,8 +84,8 @@ function Profile({ onGoBack }) {
                 {errors.address && <p className="error">{errors.address}</p>}
             </div>
             <div class="profile-bottom__buttons">
-            <button class=" " onClick={handleSave}>💾 Save Profile</button>
-            <button class="profile-bottom__buttonBack"onClick={onGoBack}>🔙 Back</button>
+                <button class=" " onClick={handleSave}>💾 Save Profile</button>
+                <button onClick={() => navigate("/")}>🔙Back</button>
             </div>
         </div>
     );

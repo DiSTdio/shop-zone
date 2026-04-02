@@ -1,0 +1,45 @@
+.search-container {
+    text-align: center;
+    margin-top: 85px;
+    margin-bottom: 20px;
+
+}
+
+.search-container input {
+    width: 80%;
+    max-width: 400px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.filters select,
+.filters input,
+.custom-price-inputs input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    /* border: 10px solid red; */
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.filter-search {
+    margin: 40px 0 0 0;
+}
+
+.select-wrapper {
+    position: relative;
+
+}
+
+.select-wrapper::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}

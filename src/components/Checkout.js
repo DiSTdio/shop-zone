@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 function Checkout({ onGoBack, onGoToOrders }) {
     const { cart, clearCart } = useContext(CartContext); //  
@@ -8,6 +9,8 @@ function Checkout({ onGoBack, onGoToOrders }) {
     const [orderNumber, setOrderNumber] = useState(""); // 
 
     const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,7 +33,7 @@ function Checkout({ onGoBack, onGoToOrders }) {
             console.log("Cart cleared in Checkout");
             clearCart(); // 
             localStorage.removeItem("cart"); // У localStorage
-        }, 1000); 
+        }, 1000);
     };
 
     if (loading) {
@@ -42,14 +45,14 @@ function Checkout({ onGoBack, onGoToOrders }) {
             <div>
                 <h2>Order Successful!</h2>
                 <p>Your order number is: {orderNumber}</p>
-                <button onClick={onGoToOrders}>View Orders</button>
+                <button onClick={() => navigate("/orders")}>View Orders</button>
             </div>
         );
     }
 
     return (
         <div className="checkout-container">
-            <h2>Checkout</h2>
+            <h2>💳 Checkout</h2>
             {cart.length === 0 ? (
                 <p>Your cart is empty.</p>
             ) : (
@@ -63,9 +66,9 @@ function Checkout({ onGoBack, onGoToOrders }) {
                     </ul>
                     <p>Total: {totalPrice.toFixed(2)}</p>
                     <form onSubmit={handleSubmit}>
-                        <button type="submit">Place Order</button>
+                        <button type="submit">✅ Place Order</button>
                     </form>
-                    <button onClick={onGoBack}>Back to Cart</button>
+                    <button onClick={() => navigate("/cart")}>🛒🔙 Back to Cart </button>
                 </>
             )}
         </div>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-function OrderHistory({ onGoBack }) {
+function OrderHistory() {
+    const navigate = useNavigate();
+
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        // ✅ Load orders from localStorage
         const savedOrders = localStorage.getItem("orders");
         setOrders(savedOrders ? JSON.parse(savedOrders) : []);
     }, []);
@@ -21,6 +23,7 @@ function OrderHistory({ onGoBack }) {
     return (
         <div className="order-history-container">
             <h2>📦 Your Orders</h2>
+
             {orders.length === 0 ? (
                 <p>No past orders found.</p>
             ) : (
@@ -28,7 +31,8 @@ function OrderHistory({ onGoBack }) {
                     {orders.map((order) => (
                         <li key={order.id}>
                             <h3>🛒 Order #{order.orderNumber}</h3>
-                            <p>📅 Placed on: <strong>{order.date || "Unknown Date"}</strong></p>
+                            <p>📅 {order.date}</p>
+
                             <ul>
                                 {order.items.map((item, i) => (
                                     <li key={i}>
@@ -36,14 +40,20 @@ function OrderHistory({ onGoBack }) {
                                     </li>
                                 ))}
                             </ul>
-                            <p><strong>Total:</strong> 💵 ${order.total}</p>
-                            <button className="delete-order" onClick={() => handleDeleteOrder(order.id)}>❌ Delete Order</button>
+
+                            <p>💵 ${order.total}</p>
+
+                            <button onClick={() => handleDeleteOrder(order.id)}>
+                                ❌ Delete
+                            </button>
+
                             <hr />
                         </li>
                     ))}
                 </ul>
             )}
-            <button onClick={onGoBack}>🔙 Back to Shop</button>
+
+            <button onClick={() => navigate("/")}>🔙 Back to Shop</button>
         </div>
     );
 }

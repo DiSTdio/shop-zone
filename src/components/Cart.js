@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 function Cart({ onGoToCheckout }) {
     const { cart, addToCart, removeFromCart, deleteProductFromCart } = useContext(CartContext);
-
+    const navigate = useNavigate();
     return (
         <div className="cart-container">
-            <h2>Your Cart</h2>
-            
+            <h2>🛒 Your Cart</h2>
+
             {cart.length === 0 ? (
                 <p>Your cart is empty.</p>
             ) : (
@@ -23,7 +24,9 @@ function Cart({ onGoToCheckout }) {
                         ))}
                     </ul>
                     <h3>Total:</h3>
-                    <button className="checkout-button" onClick={onGoToCheckout}>Go to Checkout</button>
+                    <button onClick={() => navigate("/checkout")}>
+                        💳 Go to Checkout
+                    </button>
                 </>
             )}
         </div>
